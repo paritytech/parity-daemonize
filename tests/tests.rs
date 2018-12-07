@@ -19,7 +19,7 @@ fn test_simple() {
 	let mut file = fs::File::open("pid_file").unwrap();
 	let mut pid = String::new();
 	file.read_to_string(&mut pid);
-	
+
 	let _ = process::Command::new("kill")
 		.arg("-9")
 		.arg(&pid)

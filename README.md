@@ -1,5 +1,4 @@
-# Daemonize-rs ![Crates.io](https://img.shields.io/crates/d/daemonize-rs.svg)  [![Released API 
-docs](https://docs.rs/daemonize-rs/badge.svg)](https://docs.rs/daemonize-rs)
+# Daemonize-rs ![Crates.io](https://img.shields.io/crates/d/daemonize-rs.svg) [![Released API docs](https://docs.rs/daemonize-rs/badge.svg)](https://docs.rs/daemonize-rs)
 
 ## Example
 

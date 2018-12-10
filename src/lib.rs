@@ -26,7 +26,6 @@ use libc::{
 use mio::*;
 use std::{
 	fs,
-	mem,
 	env::set_current_dir,
 	path::PathBuf,
 	ffi::CString,
@@ -34,7 +33,8 @@ use std::{
 	os::unix::{
 		ffi::OsStringExt,
 		io::{FromRawFd, RawFd}
-	}
+	},
+	ptr
 };
 use log::{trace, error};
 
@@ -97,7 +97,7 @@ impl Handle {
 
 		// redirect stdout/stderr to dev/null
 		unsafe {
-			let fd = open(mem::transmute(b"/dev/null\0"), libc::O_RDWR);
+			let fd = open(b"/dev/null\0" as *const u8 as *const i8, libc::O_RDWR);
 			let result = map_err!(dup2(fd, STDERR_FILENO), ErrorKind::Dup2(io::Error::last_os_error())).and_then(
 				|_| map_err!(dup2(fd, STDOUT_FILENO), ErrorKind::Dup2(io::Error::last_os_error()))
 			);
@@ -130,7 +130,7 @@ pub fn daemonize<T: Into<PathBuf>>(pid_file: T) -> Result<Handle> {
 		map_err!(pipe(&mut err_chan[0] as *mut c_int), ErrorKind::Pipe(io::Error::last_os_error()))?;
 
 		let path = pid_file.into();
-		let path_c =  CString::new(path.clone().into_os_string().into_vec())
+		let path_c = CString::new(path.clone().into_os_string().into_vec())
 			.map_err(|_| ErrorKind::PathContainsNul)?;
 
 		// create the pid file
@@ -192,14 +192,14 @@ pub fn daemonize<T: Into<PathBuf>>(pid_file: T) -> Result<Handle> {
 			let mut pid_f = fs::File::from_raw_fd(pid_fd);
 			pid_f.write_all(
 				format!("{}", getpid()).as_bytes()
-			).map_err(|err| ErrorKind::WritePid(err))?;
+			).map_err(ErrorKind::WritePid)?;
 
 			close(err_tx);
 			close(out_tx);
 
 			trace!(target: "daemonize", "grandchild process {}, aka daemon", getpid());
 
-			return Ok(Handle::from_fd(tx));
+			Ok(Handle::from_fd(tx))
 		} else {
 			// parent process
 			trace!(target: "daemonize", "Parent process {}", getpid());
@@ -226,21 +226,21 @@ pub fn daemonize<T: Into<PathBuf>>(pid_file: T) -> Result<Handle> {
 				STDOUT_READ_PIPE,
 				Ready::readable(),
 				PollOpt::edge(),
-			).map_err(|err| ErrorKind::RegisterationError(err))?;
+			).map_err(ErrorKind::RegisterationError)?;
 
 			poll.register(
 				&stderr_read,
 				STDERR_READ_PIPE,
 				Ready::readable(),
 				PollOpt::edge(),
-			).map_err(|err| ErrorKind::RegisterationError(err))?;
+			).map_err(ErrorKind::RegisterationError)?;
 
 			poll.register(
 				&status_read,
 				STATUS_REPORT_PIPE,
 				Ready::readable(),
 				PollOpt::edge(),
-			).map_err(|err| ErrorKind::RegisterationError(err))?;
+			).map_err(ErrorKind::RegisterationError)?;
 
 			let mut events = Events::with_capacity(1024);
 
@@ -253,7 +253,7 @@ pub fn daemonize<T: Into<PathBuf>>(pid_file: T) -> Result<Handle> {
 							let size = get_pending_data_size(out_rx)?;
 
 							map_err!(
-								splice(out_rx, 0 as *mut _, STDOUT_FILENO, 0 as *mut _, size, 0),
+								splice(out_rx, ptr::null_mut(), STDOUT_FILENO, ptr::null_mut(), size, 0),
 								ErrorKind::SpliceError(io::Error::last_os_error())
 							)?;
 						}
@@ -261,7 +261,7 @@ pub fn daemonize<T: Into<PathBuf>>(pid_file: T) -> Result<Handle> {
 							let size = get_pending_data_size(err_rx)?;
 
 							map_err!(
-								splice(err_rx, 0 as *mut _, STDERR_FILENO, 0 as *mut _, size, 0),
+								splice(err_rx, ptr::null_mut(), STDERR_FILENO, ptr::null_mut(), size, 0),
 								ErrorKind::SpliceError(io::Error::last_os_error())
 							)?;
 						}
@@ -269,7 +269,7 @@ pub fn daemonize<T: Into<PathBuf>>(pid_file: T) -> Result<Handle> {
 							let size = get_pending_data_size(rx)?;
 
 							map_err!(
-								splice(rx, 0 as *mut _, STDOUT_FILENO, 0 as *mut _, size, 0),
+								splice(rx, ptr::null_mut(), STDOUT_FILENO, ptr::null_mut(), size, 0),
 								ErrorKind::SpliceError(io::Error::last_os_error())
 							)?;
 
@@ -303,5 +303,5 @@ unsafe fn get_pending_data_size(fd: RawFd) -> Result<usize> {
 		ioctl(fd, FIONREAD, &mut size),
 		ErrorKind::Ioctl(io::Error::last_os_error())
 	)?;
-	return Ok(size)
+	Ok(size)
 }

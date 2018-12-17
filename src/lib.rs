@@ -97,7 +97,7 @@ impl Handle {
 
 		// redirect stdout/stderr to dev/null
 		unsafe {
-			let fd = open(b"/dev/null\0" as *const u8 as *const i8, libc::O_RDWR);
+			let fd = open(b"/dev/null\0" as *const u8 as *const _, libc::O_RDWR);
 			let result = map_err!(dup2(fd, STDERR_FILENO), ErrorKind::Dup2(io::Error::last_os_error())).and_then(
 				|_| map_err!(dup2(fd, STDOUT_FILENO), ErrorKind::Dup2(io::Error::last_os_error()))
 			);

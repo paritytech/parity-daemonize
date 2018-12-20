@@ -3,9 +3,9 @@
 ## Example
 
 ```rust
-extern crate daemonize_rs;
+extern crate parity_daemonize;
 
-use daemonize_rs::daemonize;
+use parity_daemonize::daemonize;
 use std::{thread, time, process, io};
 use io::Write;
 

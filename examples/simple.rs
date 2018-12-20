@@ -1,4 +1,4 @@
-use daemonize_rs::daemonize;
+use parity_daemonize::daemonize;
 use std::{thread, time, process, io};
 use self::io::Write;
 

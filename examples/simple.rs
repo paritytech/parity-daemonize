@@ -1,4 +1,4 @@
-use parity_daemonize::daemonize;
+use parity_daemonize::{AsHandle, daemonize};
 use std::{thread, time, process, io};
 use self::io::Write;
 

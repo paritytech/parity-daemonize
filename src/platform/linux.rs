@@ -17,24 +17,19 @@ use std::{
 };
 use log::{trace, error};
 
-use crate::map_err;
-use crate::error::{Error, ErrorKind};
-
+use crate::{AsHandle, Error, ErrorKind, map_err};
 use super::unix_pipe::*;
 
 type Result<T> = std::result::Result<T, Error>;
 
-/// handle returned from `daemonize` to the daemon process
-/// the daemon should use this handle to detach itself from the
-/// parent process, In cases where your program needs to run set up before starting
-/// this can be useful, as the daemon will pipe it's stdout/stderr to the parent process
-/// to communicate if start up was successful
 pub struct Handle {
 	file: Option<fs::File>
 }
 
-impl Handle {
-	pub fn from_fd(fd: RawFd) -> Self {
+impl AsHandle for Handle {
+	type Fd = RawFd;
+
+	fn from_fd(fd: Self::Fd) -> Self {
 		unsafe {
 			Self {
 				file: Some(fs::File::from_raw_fd(fd))
@@ -42,23 +37,12 @@ impl Handle {
 		}
 	}
 
-	/// detach the daemon from the parent process
-	/// this will write "Daemon started successfully" to stdout
-	/// before detaching
-	///
-	/// # panics
-	/// if detach is called more than once
-	pub fn detach(&mut self) {
+	fn detach(&mut self) {
 		let msg = ansi_term::Colour::Green.paint("Daemon started successfully, detaching ...\n").to_string();
 		self.detach_with_msg(msg);
 	}
 
-	/// detach the daemon from the parent process
-	/// with a custom message to be printed to stdout before detaching
-	///
-	/// # panics
-	/// if detach_with_msg is called more than once
-	pub fn detach_with_msg<T: AsRef<[u8]>>(&mut self, msg: T) {
+	fn detach_with_msg<T: AsRef<[u8]>>(&mut self, msg: T) {
 		let mut file = self.file.take().expect("detach should only be called once");
 
 		// redirect stdout/stderr to dev/null
@@ -165,7 +149,7 @@ pub fn daemonize<T: Into<PathBuf> + Sized>(pid_file: T) -> Result<Handle> {
 
 			trace!(target: "daemonize", "grandchild process {}, aka daemon", getpid());
 
-			Ok(Handle::from_fd(tx))
+			Ok(AsHandle::from_fd(tx))
 		} else {
 			// parent process
 			trace!(target: "daemonize", "Parent process {}", getpid());

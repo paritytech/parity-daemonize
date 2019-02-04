@@ -1,0 +1,21 @@
+environment:
+  matrix:
+  - TARGET: x86_64-pc-windows-msvc
+
+install:
+  - curl -sSf -o rustup-init.exe https://win.rustup.rs/
+  - rustup-init.exe -y --default-host %TARGET%
+  - rustc -vV
+  - cargo -vV
+
+build: false
+
+test_script:
+  - cargo build --all --verbose
+
+branches:
+  only:
+  - master
+
+cache:
+- C:\Users\appveyor\.cargo

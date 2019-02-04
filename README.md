@@ -1,7 +1,9 @@
-# Daemonize-rs ![Crates.io](https://img.shields.io/crates/d/daemonize-rs.svg) [![Released API docs](https://docs.rs/daemonize-rs/badge.svg)](https://docs.rs/daemonize-rs) [![Build Status][travis-image]][travis-url]
+# Daemonize-rs ![Crates.io](https://img.shields.io/crates/d/daemonize-rs.svg) [![Released API docs](https://docs.rs/daemonize-rs/badge.svg)](https://docs.rs/daemonize-rs) [![Build Status][travis-image]][travis-url][![Build Status][appveyor-image]][appveyor-url]
 
 [travis-image]: https://travis-ci.org/paritytech/parity-daemonize.svg?branch=master
 [travis-url]: https://travis-ci.org/paritytech/parity-daemonize
+[appveyor-image]: https://ci.appveyor.com/api/projects/status/github/paritytech/parity-daemonize?svg=true
+[appveyor-url]: https://ci.appveyor.com/project/paritytech/parity-daemonize/branch/master
 
 ## Example
 
@@ -22,7 +24,7 @@ fn main() {
                 println!("Count: {}", count);
                 if count == 5 {
                     handle.detach_with_msg("count has reached 5, continuing in background");
-                } 
+                }
                 thread::sleep(time::Duration::from_secs(1));
                 count += 1;
             }

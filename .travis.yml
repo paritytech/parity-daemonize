@@ -17,8 +17,8 @@ matrix:
       rust: stable
       script:
         - cargo build
-    allow_failures:
-      - rust: nightly
+  allow_failures:
+    - rust: nightly
 
 script:
   - cargo build

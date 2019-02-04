@@ -32,5 +32,5 @@ impl Handle {
 }
 
 pub fn daemonize<T: Into<PathBuf>>(_pid_file: T) -> Result<Handle> {
-	Err(ErrorKind::NotLinux)?
+	Err(ErrorKind::UnsupportedPlatform)?
 }

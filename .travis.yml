@@ -1,0 +1,25 @@
+language: rust
+branches:
+  only:
+    - master
+
+cache: cargo
+
+matrix:
+  include:
+    - os: linux
+      rust: stable
+    - os: linux
+      rust: beta
+    - os: linux
+      rust: nightly
+    - os: osx
+      rust: stable
+      script:
+        - cargo build
+    allow_failures:
+      - rust: nightly
+
+script:
+  - cargo build
+  - cargo test

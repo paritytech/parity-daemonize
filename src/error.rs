@@ -75,8 +75,8 @@ pub enum ErrorKind {
 	Fnctl(io::Error),
 
 	/// attempted to daemonize in windows
-	#[fail(display = "Windows doesn't support daemons")]
-	Windows
+	#[fail(display = "Only Linux daemons are supported")]
+	NotLinux
 }
 
 impl Fail for Error {

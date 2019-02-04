@@ -1,9 +1,9 @@
-# Daemonize-rs ![Crates.io](https://img.shields.io/crates/d/daemonize-rs.svg) [![Released API docs](https://docs.rs/daemonize-rs/badge.svg)](https://docs.rs/daemonize-rs) [![Build Status][travis-image]][travis-url][![Build Status][appveyor-image]][appveyor-url]
+# Daemonize-rs ![Crates.io](https://img.shields.io/crates/d/daemonize-rs.svg) [![Released API docs](https://docs.rs/daemonize-rs/badge.svg)](https://docs.rs/daemonize-rs) [![Build Status][travis-image]][travis-url] [![Build Status][appveyor-image]][appveyor-url]
 
 [travis-image]: https://travis-ci.org/paritytech/parity-daemonize.svg?branch=master
 [travis-url]: https://travis-ci.org/paritytech/parity-daemonize
 [appveyor-image]: https://ci.appveyor.com/api/projects/status/github/paritytech/parity-daemonize?svg=true
-[appveyor-url]: https://ci.appveyor.com/project/paritytech/parity-daemonize/branch/master
+[appveyor-url]: https://ci.appveyor.com/project/paritytech/parity-daemonize
 
 ## Example
 

@@ -8,7 +8,7 @@ mod linux;
 mod unsupported;
 
 #[cfg(target_os = "linux")]
-pub use linux::*;
+pub use self::linux::*;
 
 #[cfg(not(target_os = "linux"))]
-pub use unsupported::*;
+pub use self::unsupported::*;

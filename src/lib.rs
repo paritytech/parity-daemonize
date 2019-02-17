@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity.  If not, see <http://www.gnu.org/licenses/>.
 
+#![warn(missing_docs, rust_2018_idioms)]
+
 use crate::error::{Error, ErrorKind};
 use std::path::PathBuf;
 

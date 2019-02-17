@@ -1,4 +1,4 @@
-// Copyright 2015-2018 Parity Technologies (UK) Ltd.
+// Copyright 2015-2019 Parity Technologies (UK) Ltd.
 // This file is part of Parity.
 
 // Parity is free software: you can redistribute it and/or modify
@@ -14,11 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity.  If not, see <http://www.gnu.org/licenses/>.
 
+//! Library for running a process as daemon.
+//! Currently Linux is only supported.
+
 #![warn(missing_docs, rust_2018_idioms)]
 
 use crate::error::{Error, ErrorKind};
 use std::path::PathBuf;
 
+/// Error types
 pub mod error;
 
 mod platform;
@@ -31,6 +35,7 @@ type Result<T> = std::result::Result<T, Error>;
 /// this can be useful, as the daemon will pipe it's stdout/stderr to the parent process
 /// to communicate if start up was successful
 pub trait AsHandle {
+	/// File descriptor
 	type Fd;
 
 	/// Creates a `Handle` from a raw file descriptor
@@ -53,6 +58,9 @@ pub trait AsHandle {
 }
 
 #[macro_export]
+/// Macro for calling `c-style functions` and wrapping the return status in a `Result`
+/// If the function return `-1` it will return `Err<$err:expr>` otherwise `Ok(int)`
+// FIXME: this is not platform independent: `https://github.com/paritytech/parity-daemonize/issues/14`
 macro_rules! map_err {
 	($e:expr, $err:expr) => {
 		match $e {

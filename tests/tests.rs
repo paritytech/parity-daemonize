@@ -1,11 +1,4 @@
-use std::{
-	process,
-	env,
-	thread,
-	time,
-	fs,
-	io::Read
-};
+use std::{fs, io::Read, process};
 
 #[test]
 fn test_simple() {
@@ -18,7 +11,7 @@ fn test_simple() {
 
 	let mut file = fs::File::open("pid_file").unwrap();
 	let mut pid = String::new();
-	file.read_to_string(&mut pid);
+	file.read_to_string(&mut pid).unwrap();
 
 	let _ = process::Command::new("kill")
 		.arg("-9")

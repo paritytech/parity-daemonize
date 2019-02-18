@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Parity.  If not, see <http://www.gnu.org/licenses/>.
 
-//! Library for running a process as daemon.
-//! Currently Linux is only supported.
+//! Library for running a process as a daemon.
+//! Currently, only Linux is supported.
 
 #![warn(missing_docs, rust_2018_idioms)]
 
@@ -35,7 +35,7 @@ type Result<T> = std::result::Result<T, Error>;
 /// this can be useful, as the daemon will pipe it's stdout/stderr to the parent process
 /// to communicate if start up was successful
 pub trait AsHandle {
-	/// File descriptor
+	/// File descriptor type
 	type Fd;
 
 	/// Creates a `Handle` from a raw file descriptor
@@ -58,6 +58,7 @@ pub trait AsHandle {
 }
 
 #[macro_export]
+#[doc(hidden)]
 /// Macro for calling `c-style functions` and wrapping the return status in a `Result`
 /// If the function return `-1` it will return `Err<$err:expr>` otherwise `Ok(int)`
 // FIXME: this is not platform independent: `https://github.com/paritytech/parity-daemonize/issues/14`

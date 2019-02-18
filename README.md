@@ -8,16 +8,17 @@
 ## Example
 
 ```rust
+
 extern crate parity_daemonize;
 
-use parity_daemonize::daemonize;
+use parity_daemonize::{AsHandle, daemonize};
 use std::{thread, time, process, io};
 use io::Write;
 
 fn main() {
     match daemonize("pid_file.txt") {
         // we are now in the daemon, use this handle to detach from the parent process
-        Ok(handle) => {
+        Ok(mut handle) => {
             let mut count = 0;
             loop {
                 // the daemon's output is piped to the parent process' stdout
@@ -35,7 +36,7 @@ fn main() {
             // if this is the daemon, this is piped to the parent's stderr
             eprintln!("{}", e);
             // don't forget to flush
-            io::stderr().flush();
+            let _  = io::stderr().flush();
             process::exit(1);
         }
     }

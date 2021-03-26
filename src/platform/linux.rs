@@ -85,7 +85,7 @@ pub fn daemonize<T: Into<PathBuf> + Sized>(pid_file: T) -> Result<Handle> {
 
 		// create the pid file
 		let pid_fd = map_err!(
-			open(path_c.as_ptr(), libc::O_WRONLY | libc::O_CREAT, 0o666),
+			open(path_c.as_ptr(), libc::O_WRONLY | libc::O_TRUNC | libc::O_CREAT, 0o644),
 			ErrorKind::OpenPidfile(io::Error::last_os_error())
 		)?;
 
